@@ -2,7 +2,7 @@ import React from 'react';
 
 function Footer() {
   return (
-    <footer>
+    <footer className="footer-content">
       <p>&copy; {new Date().getFullYear()} Little Lemon. All rights reserved.</p>
       <address>
         <p>123 Lemon Street, Chicago, IL</p>
