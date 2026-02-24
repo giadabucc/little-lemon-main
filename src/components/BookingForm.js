@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 
 function BookingForm({ availableTimes, dispatch }) {
-  const [resDate, setResDate]   = useState('');
-  const [resTime, setResTime]   = useState(availableTimes[0] ?? '17:00');
-  const [guests, setGuests]     = useState(1);
-  const [occasion, setOccasion] = useState('Birthday');
+  const [resDate, setResDate] = useState("");
+  const [resTime, setResTime] = useState(availableTimes[0] ?? "17:00");
+  const [guests, setGuests] = useState(1);
+  const [occasion, setOccasion] = useState("Birthday");
   const [formTouched, setFormTouched] = useState(false);
+  // Minimum bookable date is today
+  const today = new Date().toISOString().split("T")[0];
   // Validazione lato client
   const isDateValid = resDate && new Date(resDate) >= new Date(today);
   const isTimeValid = resTime && availableTimes.includes(resTime);
@@ -14,15 +16,12 @@ function BookingForm({ availableTimes, dispatch }) {
   const isFormValid =
     isDateValid && isTimeValid && isGuestsValid && isOccasionValid;
 
-  // Minimum bookable date is today
-  const today = new Date().toISOString().split('T')[0];
-
   /** When the date changes, update local state AND ask Main to refresh available times */
   const handleDateChange = (e) => {
     const newDate = e.target.value;
     setResDate(newDate);
     setFormTouched(true);
-    dispatch({ type: 'UPDATE_TIMES', date: newDate });
+    dispatch({ type: "UPDATE_TIMES", date: newDate });
   };
 
   const handleSubmit = (e) => {

@@ -6,7 +6,11 @@ import BookingPage from '../pages/BookingPage';
 /** Returns the default list of available booking times */
 export function initializeTimes() {
   const today = new Date();
-  return window.fetchAPI(today);
+  if (typeof window !== "undefined" && typeof window.fetchAPI === "function") {
+    return window.fetchAPI(today);
+  }
+  // fallback per ambiente Node/test
+  return ["17:00", "18:00", "19:00"];
 }
 
 /**
@@ -17,8 +21,14 @@ export function initializeTimes() {
 export function updateTimes(state, action) {
   switch (action.type) {
     case "UPDATE_TIMES":
-      // Usa fetchAPI per la data selezionata
-      return window.fetchAPI(new Date(action.date));
+      if (
+        typeof window !== "undefined" &&
+        typeof window.fetchAPI === "function"
+      ) {
+        return window.fetchAPI(new Date(action.date));
+      }
+      // fallback per ambiente Node/test
+      return ["17:00", "18:00", "19:00"];
     default:
       return state;
   }

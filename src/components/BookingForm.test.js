@@ -12,7 +12,11 @@ afterAll(() => {
   delete window.fetchAPI;
 });
 
-// Shared props used across render tests
+// Mock globale per fetchAPI (deve essere definito PRIMA di initializeTimes)
+beforeAll(() => {
+  window.fetchAPI = jest.fn((date) => ["17:00", "18:00", "19:00"]);
+});
+
 const mockAvailableTimes = initializeTimes();
 const mockDispatch = jest.fn();
 
