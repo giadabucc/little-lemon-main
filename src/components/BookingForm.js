@@ -5,6 +5,14 @@ function BookingForm({ availableTimes, dispatch }) {
   const [resTime, setResTime]   = useState(availableTimes[0] ?? '17:00');
   const [guests, setGuests]     = useState(1);
   const [occasion, setOccasion] = useState('Birthday');
+  const [formTouched, setFormTouched] = useState(false);
+  // Validazione lato client
+  const isDateValid = resDate && new Date(resDate) >= new Date(today);
+  const isTimeValid = resTime && availableTimes.includes(resTime);
+  const isGuestsValid = guests >= 1 && guests <= 10;
+  const isOccasionValid = occasion === "Birthday" || occasion === "Anniversary";
+  const isFormValid =
+    isDateValid && isTimeValid && isGuestsValid && isOccasionValid;
 
   // Minimum bookable date is today
   const today = new Date().toISOString().split('T')[0];
@@ -13,18 +21,20 @@ function BookingForm({ availableTimes, dispatch }) {
   const handleDateChange = (e) => {
     const newDate = e.target.value;
     setResDate(newDate);
+    setFormTouched(true);
     dispatch({ type: 'UPDATE_TIMES', date: newDate });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Will be connected to the reservations API in a future exercise
+    setFormTouched(true);
+    if (!isFormValid) return;
+    // Will be connected to the reservations API in una fase successiva
     console.log({ resDate, resTime, guests, occasion });
   };
 
   return (
-    <form className="booking-form" onSubmit={handleSubmit}>
-
+    <form className="booking-form" onSubmit={handleSubmit} noValidate>
       <div className="form-field">
         <label htmlFor="res-date">Choose date</label>
         <input
@@ -34,6 +44,7 @@ function BookingForm({ availableTimes, dispatch }) {
           value={resDate}
           onChange={handleDateChange}
           required
+          aria-invalid={!isDateValid && formTouched}
         />
       </div>
 
@@ -42,7 +53,12 @@ function BookingForm({ availableTimes, dispatch }) {
         <select
           id="res-time"
           value={resTime}
-          onChange={(e) => setResTime(e.target.value)}
+          onChange={(e) => {
+            setResTime(e.target.value);
+            setFormTouched(true);
+          }}
+          required
+          aria-invalid={!isTimeValid && formTouched}
         >
           {availableTimes.map((time) => (
             <option key={time} value={time}>
@@ -60,8 +76,12 @@ function BookingForm({ availableTimes, dispatch }) {
           min="1"
           max="10"
           value={guests}
-          onChange={(e) => setGuests(Number(e.target.value))}
+          onChange={(e) => {
+            setGuests(Number(e.target.value));
+            setFormTouched(true);
+          }}
           required
+          aria-invalid={!isGuestsValid && formTouched}
         />
       </div>
 
@@ -70,17 +90,26 @@ function BookingForm({ availableTimes, dispatch }) {
         <select
           id="occasion"
           value={occasion}
-          onChange={(e) => setOccasion(e.target.value)}
+          onChange={(e) => {
+            setOccasion(e.target.value);
+            setFormTouched(true);
+          }}
+          required
+          aria-invalid={!isOccasionValid && formTouched}
         >
           <option value="Birthday">Birthday</option>
           <option value="Anniversary">Anniversary</option>
         </select>
       </div>
 
-      <button type="submit" className="btn-primary">
+      <button type="submit" className="btn-primary" aria-label="On Click">
         Make Your Reservation
       </button>
-
+      {!isFormValid && formTouched && (
+        <div className="form-error" style={{ color: "red", marginTop: "1em" }}>
+          Please fill out all fields correctly before submitting.
+        </div>
+      )}
     </form>
   );
 }
