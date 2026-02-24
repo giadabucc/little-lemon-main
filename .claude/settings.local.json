@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(npm install react-router-dom --save)",
-      "Bash(npx react-scripts test --watchAll=false --forceExit)"
-    ]
-  }
-}
